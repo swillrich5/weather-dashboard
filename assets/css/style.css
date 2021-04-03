@@ -1,0 +1,12 @@
+.jumbotron {
+    background-color: navy;
+    color:lightgray
+}
+
+.min-100-vh {
+    min-height: 100vh;
+  }
+  
+.min-100-vw {
+    min-width: 100vw;
+}
