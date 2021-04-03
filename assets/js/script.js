@@ -9,8 +9,10 @@ var currentTempEl = document.querySelector("#current-temp");
 
 function displayTheWeather(weather, city) {
     // console.log(theWeather);
-    console.log("Weather Current Temperature = ", weather.main.temp - 273.15);
+    console.log("Weather Current Temperature = ", weather.main.temp;
     console.log("Weather Humidity = ", weather.main.humidity);
+    console.log(city + " latitude = " + weather.coord.lat);
+    console.log(city + " longitude = " + weather.coord.lon);
     cityAndDateEl.textContent = weather.name;
     currentTempEl.textContent = "Temp: " + ((1.8 * (weather.main.temp - 273)) + 32).toFixed();
 
