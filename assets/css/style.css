@@ -10,3 +10,17 @@
 .min-100-vw {
     min-width: 100vw;
 }
+
+.weather-icon {
+    width: 50%;
+    height: 50%;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+.forecast-card-div {
+    background-color: navy;
+    color: whitesmoke;
+    padding: 5px;
+}
