@@ -162,8 +162,14 @@ function addToSavedCities() {
         }
         storedSearchedCities.sort();
         localStorage.setItem("storedSearchedCities", JSON.stringify(storedSearchedCities));
+        savedCityButton.addEventListener("click", function () {
 
-    
+            fetchFirstAPI(event.target.id);
+            cityNameEl.value = '';
+            for (var i = 0; i < forecastCardArray.length; i++) {
+                forecastCardArray[i].innerHTML = "";
+            }
+        }); 
     }
 }
 
@@ -186,7 +192,7 @@ function getSavedCities() {
             savedCityButton.setAttribute("id", storedSearchedCities[i]);
             // console.log("saveCityName = " + saveCityName);
             savedCityButton.innerHTML = storedSearchedCities[i];
-            savedCitiesDiv.appendChild(savedCityButton);            
+            savedCitiesDiv.appendChild(savedCityButton);           
         }
     }
 }
