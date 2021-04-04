@@ -7,6 +7,7 @@ var currentWindEl = document.querySelector("#current-wind");
 var currentHumidityEl = document.querySelector("#current-humidity");
 var currentUVIndexEl = document.querySelector("#current-uv-index");
 var forecastCardArray = document.querySelectorAll(".forecast-card-div");
+var storedSearchedCities = [];
 var saveCityName;
 
 var latitude = 0;
@@ -124,12 +125,14 @@ function getTheForecast(cityname) {
     });
 };
 
+
+
 function addToSavedCities() {
     var inSavedCities = false;
     var savedCitiesButtonArray = document.querySelectorAll(".saved-cities");
     // console.log(savedCitiesButtonArray[0].innerHTML);
-    console.log(saveCityName);
-    console.log("length =" + savedCitiesButtonArray.length);
+    // console.log(saveCityName);
+    // console.log("length =" + savedCitiesButtonArray.length);
     for (var i = 0; i < savedCitiesButtonArray.length; i++) {
 
         if (savedCitiesButtonArray[i].innerHTML === saveCityName) {
@@ -138,6 +141,7 @@ function addToSavedCities() {
         }
     }
     if (!inSavedCities) {
+        // display as a button on screen
         var savedCitiesDiv = document.querySelector("#saved-cities-div");
         var savedCityButton = document.createElement("button");
         savedCityButton.classList.add("btn");
@@ -145,10 +149,37 @@ function addToSavedCities() {
         savedCityButton.classList.add("btn-primary");
         savedCityButton.classList.add("btn-lg");
         savedCityButton.classList.add("saved-cities");
-        console.log("saveCityName = " + saveCityName);
+        // console.log("saveCityName = " + saveCityName);
         savedCityButton.innerHTML = saveCityName;
         savedCitiesDiv.appendChild(savedCityButton);
+
+        // save to local storage
+        storedSearchedCities.push(saveCityName);
+        localStorage.setItem("storedSearchedCities", JSON.stringify(storedSearchedCities));
+
     
+    }
+}
+
+
+
+function getSavedCities() {
+    storedSearchedCities = JSON.parse(localStorage.getItem("storedSearchedCities"));
+    console.log("In getSavedCities()");
+    if (storedSearchedCities !== null) {
+        // display as a button on screen
+        var savedCitiesDiv = document.querySelector("#saved-cities-div");
+        for (var i = 0; i < storedSearchedCities.length; i++) {
+            var savedCityButton = document.createElement("button");
+            savedCityButton.classList.add("btn");
+            savedCityButton.classList.add("btn-block");
+            savedCityButton.classList.add("btn-primary");
+            savedCityButton.classList.add("btn-lg");
+            savedCityButton.classList.add("saved-cities");
+            // console.log("saveCityName = " + saveCityName);
+            savedCityButton.innerHTML = storedSearchedCities[i];
+            savedCitiesDiv.appendChild(savedCityButton);            
+        }
     }
 }
 
@@ -171,5 +202,8 @@ var searchFormHandler = function(event) {
             alert('Please enter a city name');
         }
 };
+
+
+getSavedCities();
 
 searchFormEl.addEventListener('submit', searchFormHandler);
