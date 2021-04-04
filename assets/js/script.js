@@ -149,6 +149,7 @@ function addToSavedCities() {
         savedCityButton.classList.add("btn-primary");
         savedCityButton.classList.add("btn-lg");
         savedCityButton.classList.add("saved-cities");
+        savedCityButton.setAttribute("id", saveCityName);
         // console.log("saveCityName = " + saveCityName);
         savedCityButton.innerHTML = saveCityName;
         savedCitiesDiv.appendChild(savedCityButton);
@@ -168,6 +169,7 @@ function getSavedCities() {
     console.log("In getSavedCities()");
     if (storedSearchedCities !== null) {
         // display as a button on screen
+        storedSearchedCities.sort();
         var savedCitiesDiv = document.querySelector("#saved-cities-div");
         for (var i = 0; i < storedSearchedCities.length; i++) {
             var savedCityButton = document.createElement("button");
@@ -176,6 +178,7 @@ function getSavedCities() {
             savedCityButton.classList.add("btn-primary");
             savedCityButton.classList.add("btn-lg");
             savedCityButton.classList.add("saved-cities");
+            savedCityButton.setAttribute("id", storedSearchedCities[i]);
             // console.log("saveCityName = " + saveCityName);
             savedCityButton.innerHTML = storedSearchedCities[i];
             savedCitiesDiv.appendChild(savedCityButton);            
@@ -207,3 +210,14 @@ var searchFormHandler = function(event) {
 getSavedCities();
 
 searchFormEl.addEventListener('submit', searchFormHandler);
+
+document.querySelectorAll('.saved-cities').forEach(item => {
+    item.addEventListener('click', event => {
+        console.log("event = ", event);
+        fetchFirstAPI(event.target.id);
+        cityNameEl.value = '';
+        for (var i = 0; i < forecastCardArray.length; i++) {
+            forecastCardArray[i].innerHTML = "";
+        }
+    })
+});
