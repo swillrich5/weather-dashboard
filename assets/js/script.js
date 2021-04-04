@@ -125,15 +125,31 @@ function getTheForecast(cityname) {
 };
 
 function addToSavedCities() {
-    var savedCitiesDiv = document.querySelector("#saved-cities-div");
-    var savedCityButton = document.createElement("button");
-    savedCityButton.classList.add("btn");
-    savedCityButton.classList.add("btn-block");
-    savedCityButton.classList.add("btn-primary");
-    savedCityButton.classList.add("btn-lg");
-    console.log("saveCityName = " + saveCityName);
-    savedCityButton.innerHTML = saveCityName;
-    savedCitiesDiv.appendChild(savedCityButton);
+    var inSavedCities = false;
+    var savedCitiesButtonArray = document.querySelectorAll(".saved-cities");
+    // console.log(savedCitiesButtonArray[0].innerHTML);
+    console.log(saveCityName);
+    console.log("length =" + savedCitiesButtonArray.length);
+    for (var i = 0; i < savedCitiesButtonArray.length; i++) {
+
+        if (savedCitiesButtonArray[i].innerHTML === saveCityName) {
+            inSavedCities = true;
+            break;
+        }
+    }
+    if (!inSavedCities) {
+        var savedCitiesDiv = document.querySelector("#saved-cities-div");
+        var savedCityButton = document.createElement("button");
+        savedCityButton.classList.add("btn");
+        savedCityButton.classList.add("btn-block");
+        savedCityButton.classList.add("btn-primary");
+        savedCityButton.classList.add("btn-lg");
+        savedCityButton.classList.add("saved-cities");
+        console.log("saveCityName = " + saveCityName);
+        savedCityButton.innerHTML = saveCityName;
+        savedCitiesDiv.appendChild(savedCityButton);
+    
+    }
 }
 
 
