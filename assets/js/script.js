@@ -155,7 +155,12 @@ function addToSavedCities() {
         savedCitiesDiv.appendChild(savedCityButton);
 
         // save to local storage
-        storedSearchedCities.push(saveCityName);
+        if (storedSearchedCities == null) {
+            storedSearchedCities = [saveCityName];
+        } else {
+            storedSearchedCities.push(saveCityName);            
+        }
+        storedSearchedCities.sort();
         localStorage.setItem("storedSearchedCities", JSON.stringify(storedSearchedCities));
 
     
