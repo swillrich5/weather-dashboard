@@ -1,87 +1,65 @@
-const kelvin = 273.15
+    // the search form that includes the search field and button
 var searchFormEl = document.querySelector('#search-form');
+    // the input field where the user enters the city name
 var cityNameEl = document.querySelector("#city-name");
+    // the element the city name and date are displayed with current conditions
 var cityAndDateEl = document.querySelector("#city-and-date");
+    // displays current temperature element 
 var currentTempEl = document.querySelector("#current-temp");
+    // displays current wind spped element
 var currentWindEl = document.querySelector("#current-wind");
+    // displays current humidity element
 var currentHumidityEl = document.querySelector("#current-humidity");
+    // displays the current UV index
 var currentUVIndexEl = document.querySelector("#current-uv-index");
+    // holds the array of Bootstrap cards that display the daily forecast
 var forecastCardArray = document.querySelectorAll(".forecast-card-div");
+    // holds the UV index so we can change the background color
+var uVIndexSpan = document.querySelector("#uv-span");
+    // array of city names from previous searches
 var storedSearchedCities = [];
-var saveCityName;
-
-var latitude = 0;
-var longitude = 0;
+var saveCityName;               // city name global variable;
+var latitude = 0;               // lattitude and longitude form 1st API
+var longitude = 0;              // call used in 2nd API call
 
 
 // --------------------------------------------------------------------
 
-function getCityCoordinates(weather, city) {
-    console.log(city + " latitude = " + weather.coord.lat);
-    console.log(city + " longitude = " + weather.coord.lon);
-    console.log(weather);
-    latitude = weather.coord.lat;
-    longitude = weather.coord.lon;
-    console.log("City Name = " + weather.name);
-    cityAndDateEl.textContent = weather.name + " ";
-    saveCityName = weather.name;
-    console.log("weather.name = " + weather.name);
 
-}
-
-
-function fetchFirstAPI(cityname) {
-    var appID = "219b005a9f6aadc643b16112eaf5db5e";
-    var apiURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&appid=" + appID;
-    console.log("apiURL = " + apiURL);
-
-    fetch(apiURL)
-    .then(function (response) {
-        if (response.ok) {
-            // console.log(response);
-            response.json().then(function (data) {
-                // console.log(data);
-                getCityCoordinates(data, cityname);
-                getTheForecast(cityname);
-            });
-        } else {
-            alert('Error: ' + response.statusText);
-        }
-    })
-    .catch(function (error) {
-        alert('Unable to connect to OpenWeather API for Current Weather');
-    });
-};
-
-// --------------------------------------------------------------------
-
+// builds and displays the current conditions as well as 
+// builds the Bootstrap cards and displays them
 function displayTheForecast(weather, city) {
-    var dailyForecastArray = weather.daily;
-    console.log(dailyForecastArray);
 
     // Display current conditions
     var currentDate = moment(weather.daily[0].dt,'X').format("(MM-DD-YYYY)"); 
-    console.log("weather.current.dt = " + weather.current.dt);
     currentTempEl.textContent = "Temp: " + weather.current.temp + " Degrees F";
     currentWindEl.textContent = "Winds: " + weather.current.wind_speed + " MPH";
     currentHumidityEl.textContent = "Humidity: " + weather.current.humidity + "%";
-    currentUVIndexEl.textContent = "UV Index: " + weather.current.uvi;
+    if (weather.current.uvi < 3) {
+        uVIndexSpan.style.backgroundColor = "green";
+    } else if (weather.current.uvi >= 3 && weather.current.uvi < 6) {
+        uVIndexSpan.style.backgroundColor = "yellow";
+    } else if (weather.current.uvi >= 6 && weather.current.uvi < 8) {
+        uVIndexSpan.style.backgroundColor = "orange";
+    } else {
+        uVIndexSpan.style.backgroundColor = "red";
+    }
+    uVIndexSpan.style.color = "white";     
+     uVIndexSpan.innerHTML = "&nbsp" + weather.current.uvi + "&nbsp";
     cityAndDateEl.textContent += currentDate;
     
-    // display 5-day forecast
+    // display the 5-day forecast
     var iconURL = "http://www.openweathermap.org/img/wn/";
     for (var i = 1; i < 6; i++) {
         var forecastDate = moment(weather.daily[i].dt,'X').format("MM-DD-YYYY");
         var dateEl = document.createElement("h5");
         dateEl.innerHTML = forecastDate;
         forecastCardArray[i-1].appendChild(dateEl);
-        console.log("weather icon = " + weather.daily[i].weather[0].icon + ".png");        
-        var weatherIcon = iconURL + weather.daily[i].weather[0].icon + ".png";
+         var weatherIcon = iconURL + weather.daily[i].weather[0].icon + ".png";
         var iconEl = document.createElement("img");
         iconEl.src = weatherIcon;
         iconEl.classList.add("float-left");
         iconEl.classList.add("weather-icon");
-        console.log(iconEl);
         forecastCardArray[i-1].appendChild(iconEl);
         var tempEl = document.createElement("p");
         tempEl.innerHTML = "Temp: " + weather.daily[i].temp.max;
@@ -93,26 +71,22 @@ function displayTheForecast(weather, city) {
         humidityEl.innerHTML = "Humidity: " + weather.daily[i].humidity + "%";
         forecastCardArray[i-1].appendChild(humidityEl);
     }
-
-
-
 }
 
 // --------------------------------------------------------------------
 
-
+// performs the 2nd fetch to get the current conditions and 5-day forecast
+// calls addToSavedCities to save the city name for display with the other
+// previously searched cities 
 function getTheForecast(cityname) {
     var appID = "219b005a9f6aadc643b16112eaf5db5e";
     var apiURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + latitude + 
                 "&lon=" + longitude + "&units=imperial" + "&appid=" + appID;
-    console.log("apiURL = " + apiURL);
 
     fetch(apiURL)
     .then(function (response) {
         if (response.ok) {
-            // console.log(response);
             response.json().then(function (data) {
-                console.log(data);
                 displayTheForecast(data, cityname);
                 addToSavedCities();
             });
@@ -126,13 +100,15 @@ function getTheForecast(cityname) {
 };
 
 
+// --------------------------------------------------------------------
 
+
+// adds the last city name that was searched to the list of previously searched
+// cities so they can be searched again.  Also writes it and other previously 
+// searched cities to local storage
 function addToSavedCities() {
     var inSavedCities = false;
     var savedCitiesButtonArray = document.querySelectorAll(".saved-cities");
-    // console.log(savedCitiesButtonArray[0].innerHTML);
-    // console.log(saveCityName);
-    // console.log("length =" + savedCitiesButtonArray.length);
     for (var i = 0; i < savedCitiesButtonArray.length; i++) {
 
         if (savedCitiesButtonArray[i].innerHTML === saveCityName) {
@@ -150,7 +126,6 @@ function addToSavedCities() {
         savedCityButton.classList.add("btn-lg");
         savedCityButton.classList.add("saved-cities");
         savedCityButton.setAttribute("id", saveCityName);
-        // console.log("saveCityName = " + saveCityName);
         savedCityButton.innerHTML = saveCityName;
         savedCitiesDiv.appendChild(savedCityButton);
 
@@ -162,6 +137,9 @@ function addToSavedCities() {
         }
         storedSearchedCities.sort();
         localStorage.setItem("storedSearchedCities", JSON.stringify(storedSearchedCities));
+        
+        // put an event listener on the newly created button so when clicked,
+        // the city's weather and forecast can be displayed again
         savedCityButton.addEventListener("click", function () {
 
             fetchFirstAPI(event.target.id);
@@ -174,38 +152,13 @@ function addToSavedCities() {
 }
 
 
-
-function getSavedCities() {
-    storedSearchedCities = JSON.parse(localStorage.getItem("storedSearchedCities"));
-    console.log("In getSavedCities()");
-    if (storedSearchedCities !== null) {
-        // display as a button on screen
-        storedSearchedCities.sort();
-        var savedCitiesDiv = document.querySelector("#saved-cities-div");
-        for (var i = 0; i < storedSearchedCities.length; i++) {
-            var savedCityButton = document.createElement("button");
-            savedCityButton.classList.add("btn");
-            savedCityButton.classList.add("btn-block");
-            savedCityButton.classList.add("btn-primary");
-            savedCityButton.classList.add("btn-lg");
-            savedCityButton.classList.add("saved-cities");
-            savedCityButton.setAttribute("id", storedSearchedCities[i]);
-            // console.log("saveCityName = " + saveCityName);
-            savedCityButton.innerHTML = storedSearchedCities[i];
-            savedCitiesDiv.appendChild(savedCityButton);           
-        }
-    }
-}
-
-
 // --------------------------------------------------------------------
 
 
+// called when a new search is initiated.
 var searchFormHandler = function(event) {
         event.preventDefault();
-        // console.log("City Name = " + cityNameEl.value);
         var cityName = cityNameEl.value.trim();
-        console.log("City Name = " + cityName);
         if (cityName) {
             fetchFirstAPI(cityName);
             cityNameEl.value = '';
@@ -218,13 +171,84 @@ var searchFormHandler = function(event) {
 };
 
 
-getSavedCities();
+// --------------------------------------------------------------------
 
+
+// pulls the coordinates from the data from the first fetch
+function getCityCoordinates(weather, city) {
+    latitude = weather.coord.lat;
+    longitude = weather.coord.lon;
+    cityAndDateEl.textContent = weather.name + " ";
+    saveCityName = weather.name;
+}
+
+
+// --------------------------------------------------------------------
+
+
+// builds the API URL, performs the first fetch, and calls the 2nd fetch
+function fetchFirstAPI(cityname) {
+    var appID = "219b005a9f6aadc643b16112eaf5db5e";
+    var apiURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&appid=" + appID;
+
+    fetch(apiURL)
+    .then(function (response) {
+        if (response.ok) {
+            response.json().then(function (data) {
+                getCityCoordinates(data, cityname);
+                getTheForecast(cityname);  // 2nd fetch
+            });
+        } else {
+            alert('Error: ' + response.statusText);
+        }
+    })
+    .catch(function (error) {
+        alert('Unable to connect to OpenWeather API for Current Weather');
+    });
+};
+
+
+// --------------------------------------------------------------------
+
+
+// when the application starts, check local storage for any city names that
+// were previosly displayed.  Create buttons to display each one.
+function getSavedCities() {
+    storedSearchedCities = JSON.parse(localStorage.getItem("storedSearchedCities"));
+    if (storedSearchedCities !== null) {
+        // display as a button on screen
+        storedSearchedCities.sort();
+        var savedCitiesDiv = document.querySelector("#saved-cities-div");
+        for (var i = 0; i < storedSearchedCities.length; i++) {
+            var savedCityButton = document.createElement("button");
+            savedCityButton.classList.add("btn");
+            savedCityButton.classList.add("btn-block");
+            savedCityButton.classList.add("btn-primary");
+            savedCityButton.classList.add("btn-lg");
+            savedCityButton.classList.add("saved-cities");
+            savedCityButton.setAttribute("id", storedSearchedCities[i]);
+            savedCityButton.innerHTML = storedSearchedCities[i];
+            savedCitiesDiv.appendChild(savedCityButton);           
+        }
+    }
+}
+
+
+// --------------------------------------------------------------------
+// This runs when the application starts
+getSavedCities();
+// --------------------------------------------------------------------
+
+
+// Event listener that fires when a search for a new city is entered
+// and the form is submitted (clicking the search button or hitting return)
 searchFormEl.addEventListener('submit', searchFormHandler);
 
+
+// Event listeners for all of the previously searched / weather displayed 
+// cities.  
 document.querySelectorAll('.saved-cities').forEach(item => {
     item.addEventListener('click', event => {
-        console.log("event = ", event);
         fetchFirstAPI(event.target.id);
         cityNameEl.value = '';
         for (var i = 0; i < forecastCardArray.length; i++) {

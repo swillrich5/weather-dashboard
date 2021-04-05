@@ -39,3 +39,17 @@ Weather-Dashboard has the following requirements:
 * Each previously searched-for city should be displayed on the screen in a way that allows the user to display the current weather and forecast by clicking on the city's name.  Cities searched for in prior uses of the application should be displayed as well.
 
 
+## Application Image
+
+![Application Screenshot](./assets/images/weather-dashboard.png "Application Screenshot")
+Application Screenshot
+
+## Technologies in Use
+
+The weather-dashboard was built using:
+
+  * HTML 
+  * Bootstrap 
+  * css 
+  * Javascript, and 
+  * The Open Weather API

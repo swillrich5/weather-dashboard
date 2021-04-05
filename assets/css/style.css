@@ -7,10 +7,6 @@
     min-height: 100vh;
   }
   
-.min-100-vw {
-    min-width: 100vw;
-}
-
 .weather-icon {
     width: 50%;
     height: 50%;
